@@ -1,9 +1,10 @@
 # Azure  
 
 前端程序，登录Azure后，根据type类型跳转不同界面。研究重定向url流程。  
+首先创建一个Azure账号（最好是组织邮箱登录），在应用注册中注册应用程序，记住clientId  
 命令行启动本地服务器：npx http-server  
 登录网址：http://localhost:8080  
-clientId 替换为 "YOUR_CLIENT_ID"，并加注释提醒对方替换为自己的应用ID。  
+clientId 替换为 "YOUR_CLIENT_ID"。  
 redirectUri 保持本地开发默认值，根据Azure应用注册中实际情况调整。  
 
 流程：  
