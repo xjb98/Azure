@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>组织信息</title>
+</head>
+<body>
+<h1>用户所在的组</h1>
+<ul id="groupList"></ul>
+<button onclick="window.location.href='index.html'">返回</button>
+<script src="https://alcdn.msauth.net/browser/2.30.0/js/msal-browser.min.js"></script>
+<script>
+    const msalConfig = {
+        auth: {
+            clientId: "YOUR_CLIENT_ID",
+            authority: "https://login.microsoftonline.com/yourtenantid",
+            redirectUri: "http://localhost:8080/redirect.html",
+            navigateToLoginRequestUrl: false
+        },
+        cache: {
+            cacheLocation: "localStorage",
+            storeAuthStateInCookie: false,
+        }
+    };
+    const msalInstance = new msal.PublicClientApplication(msalConfig);
+    const accounts = msalInstance.getAllAccounts();
+
+    async function fetchAllGroups(token, url, allGroups=[]) {
+        const resp = await fetch(url, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await resp.json();
+        if (data.value) allGroups = allGroups.concat(data.value);
+        if (data['@odata.nextLink']) {
+            return fetchAllGroups(token, data['@odata.nextLink'], allGroups);
+        }
+        return allGroups;
+    }
+
+    if (accounts.length > 0) {
+        const request = {
+            scopes: ["User.Read", "GroupMember.Read.All"],
+            account: accounts[0]
+        };
+        msalInstance.acquireTokenSilent(request).then(async tokenResponse => {
+            const groups = await fetchAllGroups(tokenResponse.accessToken, "https://graph.microsoft.com/v1.0/me/memberOf");
+            const ul = document.getElementById('groupList');
+            if (groups.length > 0) {
+                groups.forEach(group => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${group.displayName || ''}</strong> (ID: ${group.id}) 类型: ${group['@odata.type'] || ''}`;
+                    ul.appendChild(li);
+                });
+            } else {
+                ul.innerHTML = '<li>无所属组</li>';
+            }
+        });
+    } else {
+        document.getElementById('groupList').innerHTML = '<li>未登录</li>';
+    }
+</script>
+</body>
+</html>
