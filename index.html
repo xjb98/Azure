@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Azure AD Login Example</title>
+    <script src="https://alcdn.msauth.net/browser/2.30.0/js/msal-browser.min.js"></script>
+</head>
+<body>
+<h1>Azure AD 登录示例</h1>
+<button id="loginUserButton">登录并查看用户信息</button>
+<button id="loginOrgButton">登录并查看组织信息</button>
+<div id="userInfo" style="margin-top: 20px;"></div>
+
+<script src="auth.js"></script>
+<script>
+    // 绑定两个按钮事件
+    document.getElementById('loginUserButton').onclick = function() {
+        localStorage.setItem('loginType', 'user');
+        const loginRequest = { scopes: ["User.Read"] };
+        msalInstance.loginRedirect(loginRequest);
+    };
+    document.getElementById('loginOrgButton').onclick = function() {
+        localStorage.setItem('loginType', 'org');
+        const loginRequest = { scopes: ["User.Read", "GroupMember.Read.All"] };
+        msalInstance.loginRedirect(loginRequest);
+    };
+</script>
+</body>
+</html>
