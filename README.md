@@ -1,5 +1,5 @@
 # Azure  
-============
+
 前端程序，登录Azure后，根据type类型跳转不同界面。研究重定向url流程。  
 命令行启动本地服务器：npx http-server  
 登录网址：http://localhost:8080  
